@@ -39,8 +39,12 @@ module Hist
         return new_img
     end
 
-    function hist_matching()
+    function eq_to_spec_mapping(gz_lut::Vector{Int}, s_lut::Vector{Int})
+        z_lut = zeros(Int, L)
 
+        for i in 1:size(s_lut)
+            
+        end
     end
 end
 

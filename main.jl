@@ -18,9 +18,10 @@ hist = Hist.image_hist(img_int, L)
 spec_hist = Hist.image_hist(img2_int, L)
 
 img_eq = Hist.hist_equalization(img_int, hist, L)
-
 eq_hist = Hist.image_hist(img_eq, L)
+
 gz_lut = Hist.create_lut(spec_hist, L)
+s_lut = Hist.create_lut(eq_hist, L)
 
 display(plot(
     plot(img_resized, title="Original"),
