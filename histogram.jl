@@ -27,7 +27,7 @@ module Hist
         return lut
     end
 
-    function hist_equalization(img::Matrix{Int}, pr::Vector{Float64}, L::Int)
+    function equalization(img::Matrix{Int}, pr::Vector{Float64}, L::Int)
         lut = create_lut(pr, L)
         new_img = zeros(Int, size(img))
 
@@ -39,12 +39,40 @@ module Hist
         return new_img
     end
 
-    function eq_to_spec_mapping(gz_lut::Vector{Int}, s_lut::Vector{Int})
+    function lut_matching(G::Vector{Int}, s::Vector{Int})
+        L = length(s)
         z_lut = zeros(Int, L)
 
-        for i in 1:size(s_lut)
-            
+        for k in 1:L
+            diff_min = Inf
+            z = 1
+
+            for q in 1:L
+                diff = abs(G[q] - s[k])
+
+                if diff < diff_min
+                    z = q - 1
+                    diff_min = diff
+                end
+            end
+
+            z_lut[k] = z
         end
+
+        return z_lut
+    end
+
+    function matching(img::Matrix{Int}, G::Vector{Int}, s::Vector{Int})
+        new_img = zeros(Int, size(img))
+        z_lut = lut_matching(G, s)
+        L = length(z_lut)
+
+        for i in eachindex(img)
+            val = img[i]
+            new_img[i] = z_lut[val + 1]
+        end
+
+        return new_img
     end
 end
 

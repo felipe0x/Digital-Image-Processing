@@ -17,16 +17,28 @@ L = 256
 hist = Hist.image_hist(img_int, L)
 spec_hist = Hist.image_hist(img2_int, L)
 
-img_eq = Hist.hist_equalization(img_int, hist, L)
+img_eq = Hist.equalization(img_int, hist, L)
 eq_hist = Hist.image_hist(img_eq, L)
 
-gz_lut = Hist.create_lut(spec_hist, L)
-s_lut = Hist.create_lut(eq_hist, L)
+G = Hist.create_lut(spec_hist, L)
+s = Hist.create_lut(eq_hist, L)
+
+spec_img = Hist.matching(img_int, G, s)
+spec_img_hist = Hist.image_hist(spec_img, L)
 
 display(plot(
     plot(img_resized, title="Original"),
-    plot(Gray.(img_eq ./ (L-1)), title="Equalizada"),
-    bar(hist, title="Histograma", label=""),
-    bar(eq_hist, title="Histograma Equalizado", label=""),
-    layout=(2,2)
+    plot(Gray.(spec_img ./ (L-1)), title="After Matching"),
+    bar(hist, title="Histogram", label=""),
+    bar(spec_hist, title="Specified Histogram", label=""),
+    bar(spec_img_hist, title="Matched Histogram"),
+    layout=(2,3)
 ))
+
+# display(plot(
+#     plot(img_resized, title="Original"),
+#     plot(Gray.(img_eq ./ (L-1)), title="Equalizada"),
+#     bar(hist, title="Histograma", label=""),
+#     bar(eq_hist, title="Histograma Equalizado", label=""),
+#     layout=(2,2)
+# ))
