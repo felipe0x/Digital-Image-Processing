@@ -15,7 +15,7 @@ def create_lut(pr, L):
     lut = np.zeros(L)
     cdf = 0.0
 
-    for i in range(0, L):
+    for i in range(L):
         cdf += pr[i]
         val = (L - 1) * cdf
         lut[i] = round(val)
@@ -24,52 +24,40 @@ def create_lut(pr, L):
 
 def equalization(img, pr, L):
     lut = create_lut(pr, L)
-    new_img = np.zeros()
+    new_img = np.zeros(img.size)
 
-    function equalization(img::Matrix{Int}, pr::Vector{Float64}, L::Int)
-        lut = create_lut(pr, L)
-        new_img = zeros(Int, size(img))
+    for i, j in np.ndindex(img.shape):
+        val = img[i, j]
+        new_img[i, j] = lut[val] 
+    
+    return new_img
 
-        for i in eachindex(img)
-            val = img[i]
-            new_img[i] = lut[val + 1]
-        end
+def lut_matching(G, s):
+    L = len(s)
+    z_lut = np.zeros(L)
 
-        return new_img
-    end
+    for k in range(L):
+        diff_min = np.inf
+        z = 0
 
-    function lut_matching(G::Vector{Int}, s::Vector{Int})
-        L = length(s)
-        z_lut = zeros(Int, L)
+        for q in range(L):
+            diff = np.abs(G[q] - s[k])
 
-        for k in 1:L
-            diff_min = Inf
-            z = 1
+            if diff < diff_min:
+                z = q
+                diff_min = diff
 
-            for q in 1:L
-                diff = abs(G[q] - s[k])
+        z_lut[k] = z
 
-                if diff < diff_min
-                    z = q - 1
-                    diff_min = diff
-                end
-            end
+    return z_lut
 
-            z_lut[k] = z
-        end
-
-        return z_lut
-    end
-
-    function matching(img::Matrix{Int}, G::Vector{Int}, s::Vector{Int})
-        new_img = zeros(Int, size(img))
+    def matching(img, G, s):
+        new_img = np.zeros(img.shape)
         z_lut = lut_matching(G, s)
-        L = length(z_lut)
+        L = len(z_lut)
 
-        for i in eachindex(img)
-            val = img[i]
-            new_img[i] = z_lut[val + 1]
-        end
+        for i, j in np.ndindex(img.shape):
+            val = img[i, j]
+            new_img[i, j] = z_lut[val]
 
         return new_img
-    end
